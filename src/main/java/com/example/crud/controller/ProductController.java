@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.crud.exception.ProductNotFoundException;
 import com.example.crud.model.Product;
 import com.example.crud.service.IProductservice;
 
@@ -32,9 +33,9 @@ public class ProductController {
 
 	@PreAuthorize("hasAuthority('USER')")
 	@GetMapping(value = "/getproduct")
-	public ResponseEntity<Optional<Product>> getProduct(@RequestParam("id") long id) {
+	public ResponseEntity<Product> getProduct(@RequestParam("id") long id) {
 		Optional<Product> prd = productService.getProduct(id);
-		return new ResponseEntity<Optional<Product>>(prd, HttpStatus.OK);
+		return new ResponseEntity<Product>(prd.orElseThrow(()-> new ProductNotFoundException("product with id: "+id+" didn't found")), HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasAuthority('USER')")
